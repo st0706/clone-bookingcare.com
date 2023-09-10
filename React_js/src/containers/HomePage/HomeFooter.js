@@ -13,8 +13,8 @@ class HomeFooter extends Component {
             <div className='home-footer'>
                 <p>&copy; 2023 Sơn Tùng</p>
                 <div className='icon-footer'>
-                    <a target='_blank' href='https://www.facebook.com/st.0706' className='icon-fb'><i class="fab fa-facebook"></i></a>
-                    <a target='_blank' href='https://github.com/st0706' className='icon-github'><i class="fab fa-github"></i></a>
+                    <a target='_blank' href='https://www.facebook.com/st.0706' className='icon-fb'><i className="fab fa-facebook"></i></a>
+                    <a target='_blank' href='https://github.com/st0706' className='icon-github'><i className="fab fa-github"></i></a>
                 </div>
             </div>
         );
