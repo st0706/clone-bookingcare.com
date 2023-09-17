@@ -1,7 +1,8 @@
 import actionTypes from './actionTypes';
 import {
     getAllCodeService, createNewUserService, getAllUsers,
-    deleteUserService, editUserService, getTopDoctorHomeService
+    deleteUserService, editUserService, getTopDoctorHomeService,
+    getAllDoctors, saveDetailDoctorService
 } from '../../services/userService'
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -200,6 +201,54 @@ export const fetchTopDoctor = () => {
             toast.error("Fetch top doctors error")
             dispatch({
                 type: actionTypes.FETCH_TOP_DOCTORS_FAILED
+            })
+        }
+    }
+}
+
+export const fetchAllDoctors = () => {
+    return async (dispatch, getState) => {
+        try {
+            let res = await getAllDoctors()
+            if (res && res.errCode === 0) {
+                dispatch({
+                    type: actionTypes.FETCH_ALL_DOCTORS_SUCCESS,
+                    dataDoctors: res.data
+                })
+            }
+            else dispatch({
+                type: actionTypes.FETCH_ALL_DOCTORS_FAILED
+            })
+        } catch (error) {
+            toast.error("Fetch all doctors error")
+            dispatch({
+                type: actionTypes.FETCH_ALL_DOCTORS_FAILED
+            })
+        }
+    }
+}
+
+export const saveDetailDoctor = (data) => {
+    return async (dispatch, getState) => {
+        try {
+            let res = await saveDetailDoctorService(data)
+            if (res && res.errCode === 0) {
+                toast.success("Save detail doctor successfully!")
+                dispatch({
+                    type: actionTypes.SAVE_DETAIL_DOCTOR_SUCCESS,
+                    dataDoctors: res.data
+                })
+            }
+            else {
+                toast.error("Save detail doctor error")
+                dispatch({
+                    type: actionTypes.SAVE_DETAIL_DOCTOR_FAILED
+                })
+            }
+        } catch (error) {
+            toast.error("Save detail doctor error")
+            dispatch({
+                type: actionTypes.SAVE_DETAIL_DOCTOR_FAILED
             })
         }
     }
