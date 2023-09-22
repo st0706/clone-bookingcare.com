@@ -9,7 +9,7 @@ import DatePicker from '../../../components/Input/DatePicker';
 import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import _ from 'lodash';
-
+import { saveBulkScheduleDoctor } from '../../../services/userService';
 class ManageSchedule extends Component {
     constructor(props) {
         super(props);
@@ -64,9 +64,11 @@ class ManageSchedule extends Component {
         this.setState({ selectedDoctor });
     };
     handleOnChangeDatePicker = (date) => {
-        this.setState({
-            currentDate: date[0]
-        })
+        if (date) {
+            this.setState({
+                currentDate: date[0]
+            })
+        }
     }
     handleClickBtnTime = (time) => {
         let { rangeTime } = this.state
@@ -81,9 +83,9 @@ class ManageSchedule extends Component {
             })
         }
     }
-    handleSaveSchedule = () => {
+    handleSaveSchedule = async () => {
         let { rangeTime, selectedDoctor, currentDate } = this.state
-        let formattedDate = moment(currentDate).format(dateFormat.SEND_TO_SERVER)
+        let formattedDate = new Date(currentDate).getTime()
         let result = []
 
         if (selectedDoctor && _.isEmpty(selectedDoctor)) {
@@ -102,7 +104,7 @@ class ManageSchedule extends Component {
                     let object = {}
                     object.doctorId = selectedDoctor.value
                     object.date = formattedDate
-                    object.time = time.keyMap
+                    object.timeType = time.keyMap
                     result.push(object)
                 })
             }
@@ -110,13 +112,18 @@ class ManageSchedule extends Component {
                 toast.error('Invalid selected time!')
                 return
             }
-            console.log(result)
         }
-
+        let res = await saveBulkScheduleDoctor({
+            arrSchedule: result,
+            doctorId: selectedDoctor.value,
+            formattedDate: formattedDate
+        })
+        toast.success(res.message)
     }
     render() {
         let { rangeTime } = this.state
         let { language } = this.props
+        console.log('check', this.state.currentDate)
         return (
             <div className='manage-schedule-container'>
                 <div className='manage-schedule-title'>
@@ -137,7 +144,7 @@ class ManageSchedule extends Component {
                             <DatePicker
                                 onChange={this.handleOnChangeDatePicker}
                                 className='form-control'
-                                value={this.state.currentDate[0]}
+                                value={this.state.currentDate ? this.state.currentDate[0] : ''}
                                 minDate={new Date()}
                             />
                         </div>
