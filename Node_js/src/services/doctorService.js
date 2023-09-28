@@ -63,6 +63,8 @@ let saveDetailInfoDoctor = (inputData) => {
                 })
             }
             else {
+
+                //upsert to Markdown table
                 if (inputData.action === 'CREATE') {
                     await db.Markdown.create({
                         contentHTML: inputData.contentHTML,
@@ -83,6 +85,39 @@ let saveDetailInfoDoctor = (inputData) => {
                         await doctorMarkdown.save()
                     }
                 }
+
+                //upsert to Doctor_Infor table
+                let doctorInfo = await db.Doctor_Info.findOne({
+                    where: {
+                        doctorId: inputData.doctorId,
+                    },
+                    raw: false
+                })
+
+                if (doctorInfo) {
+                    //update
+                    doctorInfo.doctorId = inputData.doctorId
+                    doctorInfo.priceId = inputData.selectedPrice
+                    doctorInfo.provinceId = inputData.selectedProvice
+                    doctorInfo.paymentId = inputData.selectedPayment
+                    doctorInfo.nameClinic = inputData.nameClinic
+                    doctorInfo.addressClinic = inputData.addressClinic
+                    doctorInfo.note = inputData.note
+                    await doctorInfo.save()
+                }
+                else {
+                    //create
+                    await db.Doctor_Info.create({
+                        doctorId: inputData.doctorId,
+                        priceId: inputData.selectedPrice,
+                        provinceId: inputData.selectedProvice,
+                        paymentId: inputData.selectedPayment,
+                        nameClinic: inputData.nameClinic,
+                        addressClinic: inputData.addressClinic,
+                        note: inputData.note,
+                    })
+                }
+
                 resolve({
                     errCode: 0,
                     message: 'Save info doctor successfully!'
@@ -112,6 +147,16 @@ let getDetailDoctorById = (inputId) => {
                     include: [
                         { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] },
                         { model: db.Allcode, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
+                        {
+                            model: db.Doctor_Info,
+                            attributes:
+                                { exclude: ['id', 'doctorId',] },
+                            include: [
+                                { model: db.Allcode, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.Allcode, as: 'provinceTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.Allcode, as: 'paymentTypeData', attributes: ['valueEn', 'valueVi'] },
+                            ]
+                        },
                     ],
                     raw: false,
                     nest: true
