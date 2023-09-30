@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import HomeHeader from '../../HomePage/HomeHeader';
 import './DoctorExtraInfo.scss'
-import { getDetailInfoDoctor } from '../../../services/userService'
 import { LANGUAGES } from '../../../utils';
-import moment from 'moment'
-import localization from 'moment/locale/vi'
 import { getExtraInfoDoctorById } from '../../../services/userService';
 import { FormattedMessage } from 'react-intl';
 import NumberFormat from 'react-number-format';
